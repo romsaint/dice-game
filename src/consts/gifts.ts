@@ -1,0 +1,1 @@
+export const gifts = ['https://media.tenor.com/siAgcqv9oSYAAAAi/roll-1.gif', 'https://media.tenor.com/0MbolgeOVNIAAAAi/roll-2.gif', 'https://media.tenor.com/_ex4eAFu8pEAAAAi/roll-6.gif', 'https://media.tenor.com/oKe020x4waYAAAAi/roll-5.gif', 'https://media.tenor.com/qYemyqPa0zIAAAAi/roll-4.gif', 'https://media.tenor.com/FbeObYXycNwAAAAi/roll-3.gif']
