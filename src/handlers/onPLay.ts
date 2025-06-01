@@ -2,12 +2,13 @@ import { Message } from "node-telegram-bot-api";
 import { bot } from "../app";
 import { play } from "../utils/play";
 import { redisClient } from "../db/redis/redisClient";
-import { usersCollection } from "../db/mongo/mongoClient";
 
 export async function onPlay(msg: Message) {
     const userId = msg.from?.id
     if (!userId) return
-
+    // await usersCollection.deleteOne({id: userId})
+    // await deleteState(userId)
+    
     try {
         const redisState = await redisClient.get(`${userId}`)
         

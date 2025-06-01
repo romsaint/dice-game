@@ -31,7 +31,6 @@ export async function onText(msg: Message) {
             }
             await depositState(msg, userId, user)
         }
-
         if (state && !isNaN(Number(state))) {
             if (user.balance < Number(state)) {
                 bot.sendMessage(userId, 'Не хватает средств', {

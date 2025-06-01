@@ -8,6 +8,7 @@ import { onQuery } from './handlers/onQuery';
 import { onText } from './handlers/onText';
 import { onBalance } from './handlers/onBalance';
 import { onDeposit } from './handlers/onDeposit';
+import { onStat } from './handlers/onStat';
 
 const token = process.env.TOKEN
 if (!token) {
@@ -37,3 +38,4 @@ bot.on('callback_query', onQuery)
 bot.onText(/\/play/, onPlay)
 bot.onText(/\/balance/, onBalance)
 bot.onText(/\/deposit/, onDeposit)
+bot.onText(/\/stat/, onStat)

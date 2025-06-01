@@ -7,6 +7,7 @@ import { TypeDicePlay } from "../../interfaces/dicePlay.interface";
 import { redisClient } from "../../db/redis/redisClient";
 import { deleteState } from "../../utils/deleteState";
 import { gifts } from "../../consts/gifts";
+import { resultGame } from "../../utils/resultGame";
 
 
 export async function playState(msg: Message, money: number, userId: number) {
@@ -47,7 +48,7 @@ export async function playState(msg: Message, money: number, userId: number) {
         await new Promise((res, rej) => {
             setTimeout(async () => {
                 res(52)
-            }, 3000)
+            }, 3050)
         })
 
         const moneyWinData = await redisClient.get(`${userId}-money`)
@@ -61,32 +62,26 @@ export async function playState(msg: Message, money: number, userId: number) {
         if (moneyWin === money) {
             moneyWin = 0
         }
-
+      
         const session = mongoClient.startSession()
+
         try {
             if (game) {
                 if (game.msg === 'Вы выиграли!!') {
-                    session.startTransaction()
-                    await usersCollection.updateOne({ id: userId }, { $inc: { balance: Math.round(-money) } }, { session })
-                    await usersCollection.updateOne({ id: userId }, { $inc: { balance: Math.round(moneyWin) } }, { session })
-                    await session.commitTransaction()
-
-                    const user = await usersCollection.findOne({ id: userId })
-                    await bot.sendMessage(userId, `Выпало число - ${game.randomNum}`)
-                    await bot.sendMessage(userId, `Вы выиграли ${moneyWin} рублей, ваш баланс - ${user?.balance}`)
+                    const balance = Math.round(moneyWin) + Math.round(-money)
+                    await usersCollection.updateOne({ id: userId }, { $inc: { balance, winSum: moneyWin } }, { session })
+                    
+                    await resultGame(userId, true, game, moneyWin)
 
                 } else {
-                    await usersCollection.updateOne({ id: userId }, { $inc: { balance: Math.round(-money) } })
-                    const user = await usersCollection.findOne({ id: userId })
-                    await bot.sendMessage(userId, `Выпало число - ${game.randomNum}`)
-                    await bot.sendMessage(userId, `Вы проиграли, ваш баланс - ${user?.balance}`)
+                    await usersCollection.updateOne({ id: userId }, { $inc: { balance: Math.round(-money), gameCount: 1, loseSum: money} })
+                    await resultGame(userId, false, game)
                 }
             } else {
                 bot.sendMessage(userId, 'ошибка')
                 return
             }
         } catch (e) {
-            await session.abortTransaction();
             bot.sendMessage(userId, 'Ошибка при пополнение счёта, ваши деньги не пострадали')
             return
         }
