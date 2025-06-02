@@ -20,7 +20,7 @@ export async function onStart(msg: Message) {
     }
 
     if (!user) {
-        const newUser: IUser = { balance: 0, gameCount: 0, id: userId, loseSum: 0, winSum: 0 }
+        const newUser: IUser = { balance: 0, gameCount: 0, id: userId, loseSum: 0, winSum: 0, bigWinCount: 0, gameSum: 0 }
         await usersCollection.insertOne(newUser)
         bot.sendMessage(userId, 'Добро пожаловать в игру Wintab Dice! В этой игре вы должны угадать число, которое выпало на игральном кубике либо диапазон чисел (от 2 до 4 и т.д), если угадаете, то приумножите свои деньги!', {
             reply_markup: {

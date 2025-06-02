@@ -1,7 +1,5 @@
 import { Message } from "node-telegram-bot-api";
 import { bot } from "../app";
-import { play } from "../utils/play";
-import { redisClient } from "../db/redis/redisClient";
 import { usersCollection } from "../db/mongo/mongoClient";
 
 export async function onBalance(msg: Message) {

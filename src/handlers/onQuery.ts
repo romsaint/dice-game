@@ -1,5 +1,5 @@
 import { CallbackQuery } from "node-telegram-bot-api";
-import { play } from "../utils/play";
+import { pay } from "../utils/pay";
 import { deleteState } from "../utils/deleteState";
 import { bot } from "../app";
 import { deposit } from "../utils/deposit";
@@ -19,7 +19,7 @@ export async function onQuery(query: CallbackQuery) {
     }
 
     if (data === 'PLAY') {
-        await play(userId)
+        await pay(userId)
         return
     }
 }

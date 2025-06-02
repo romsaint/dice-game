@@ -3,14 +3,14 @@ import { dicePlay } from "../../utils/dicePlay";
 import { bot } from "../../app";
 import { playRange, TypePlayRange } from "../../consts/playRange";
 import { mongoClient, usersCollection } from "../../db/mongo/mongoClient";
-import { TypeDicePlay } from "../../interfaces/dicePlay.interface";
 import { redisClient } from "../../db/redis/redisClient";
 import { deleteState } from "../../utils/deleteState";
 import { gifts } from "../../consts/gifts";
 import { resultGame } from "../../utils/resultGame";
+import { IUser } from "../../interfaces/user.interface";
 
 
-export async function playState(msg: Message, money: number, userId: number) {
+export async function playState(msg: Message, money: number, userId: number, user: IUser) {
     try {
         const prediction = msg.text
         
@@ -37,7 +37,7 @@ export async function playState(msg: Message, money: number, userId: number) {
             return
         }
 
-        const game = await dicePlay(prediction, userId, money)
+        const game = await dicePlay(prediction, userId, money, user)
         const gift = gifts.filter(val => val.split('/')[val.split('/').length - 1].includes(`${game?.randomNum}`))
 
         if (!gift) {
@@ -69,7 +69,7 @@ export async function playState(msg: Message, money: number, userId: number) {
             if (game) {
                 if (game.msg === 'Вы выиграли!!') {
                     const balance = Math.round(moneyWin) + Math.round(-money)
-                    await usersCollection.updateOne({ id: userId }, { $inc: { balance, winSum: moneyWin } }, { session })
+                    await usersCollection.updateOne({ id: userId }, { $inc: { balance, winSum: moneyWin, gameSum: money, gameCount: 1} }, { session })
                     
                     await resultGame(userId, true, game, moneyWin)
 

@@ -42,7 +42,7 @@ export async function onText(msg: Message) {
 
                 return
             }
-            await playState(msg, Number(state), userId)
+            await playState(msg, Number(state), userId, user)
             return
         }
 

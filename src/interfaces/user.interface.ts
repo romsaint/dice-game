@@ -4,4 +4,6 @@ export interface IUser {
     winSum: number
     loseSum: number
     gameCount: number
+    bigWinCount: number
+    gameSum: number
 }

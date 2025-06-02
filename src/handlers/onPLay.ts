@@ -1,14 +1,16 @@
 import { Message } from "node-telegram-bot-api";
 import { bot } from "../app";
-import { play } from "../utils/play";
+import { pay } from "../utils/pay";
 import { redisClient } from "../db/redis/redisClient";
+import { deleteState } from "../utils/deleteState";
+import { usersCollection } from "../db/mongo/mongoClient";
 
 export async function onPlay(msg: Message) {
     const userId = msg.from?.id
     if (!userId) return
     // await usersCollection.deleteOne({id: userId})
     // await deleteState(userId)
-    
+    //     return
     try {
         const redisState = await redisClient.get(`${userId}`)
         
@@ -21,7 +23,7 @@ export async function onPlay(msg: Message) {
             return
         }
 
-        await play(userId)
+        await pay(userId)
     }
     catch (e) {
         bot.sendMessage(userId, 'ошибка')
