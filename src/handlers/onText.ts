@@ -14,6 +14,7 @@ export async function onText(msg: Message) {
     try {
         const state = await redisClient.get(`${userId}`)
         const user = await usersCollection.findOne({ id: userId })
+        console.log(user)
         if (!user) {
             return
         }
@@ -32,6 +33,11 @@ export async function onText(msg: Message) {
             await depositState(msg, userId, user)
         }
         if (state && !isNaN(Number(state))) {
+            if (msg.text === 'выход') {
+                bot.sendMessage(userId, 'Вы вышли из игры')
+                await deleteState(userId)
+                return
+            }
             if (user.balance < Number(state)) {
                 bot.sendMessage(userId, 'Не хватает средств', {
                     reply_markup: {

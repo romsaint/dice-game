@@ -4,7 +4,6 @@ import { bot } from "../../app";
 import { playRange, TypePlayRange } from "../../consts/playRange";
 import { mongoClient, usersCollection } from "../../db/mongo/mongoClient";
 import { redisClient } from "../../db/redis/redisClient";
-import { deleteState } from "../../utils/deleteState";
 import { gifts } from "../../consts/gifts";
 import { resultGame } from "../../utils/resultGame";
 import { IUser } from "../../interfaces/user.interface";
@@ -16,11 +15,7 @@ export async function playState(msg: Message, money: number, userId: number, use
         
         if (prediction) {
             const numPred = Number(prediction)
-            if (prediction === 'выход') {
-                bot.sendMessage(userId, 'Вы вышли из игры')
-                await deleteState(userId)
-                return
-            }
+            
             if (!isNaN(numPred)) {
                 if (numPred > 0 && numPred <= 6) {
 

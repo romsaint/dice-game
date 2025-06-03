@@ -8,6 +8,8 @@ import { LuckyCheat } from './cheats/luckyCheat'
 import { CheatService } from './cheats/cheatService'
 import { IUser } from '../interfaces/user.interface'
 import { usersCollection } from '../db/mongo/mongoClient'
+import { numberPlayCheat } from './dicePlayCheats/numberCheat'
+import { stringCheat } from './dicePlayCheats/stringCheat'
 
 export async function dicePlay(dicePrediction: string | TypePlayRange[number], userId: number, money: number, user: IUser): Promise<TypeDicePlay> {
     const random = exhaustiveUniqueRandom(1, 6)
@@ -20,23 +22,17 @@ export async function dicePlay(dicePrediction: string | TypePlayRange[number], u
         const cheatService = new CheatService(user, cheat, luckyCheat)
         const res = cheatService.cheatDistribution()
 
+        if (res === true) {
+            await usersCollection.updateOne({ id: userId }, { $inc: { cheatingCount: 1 } })
+        }
+        else {
+            await usersCollection.updateOne({ id: userId }, { $set: { cheatingCount: 0 } })
+        }
+
         console.log([randomNum, dicePrediction, res])
         if (!isNaN(Number(dicePrediction))) {
-            if (res === true) {
-                if (randomNum === Number(dicePrediction)) {
-                    if (randomNum > 5) {
-                        randomNum = randomNum - 1
-                    } else {
-                        randomNum = randomNum + 1
-                    }
-                }
-            }
-            if (res === false) {
-                randomNum = Number(dicePrediction)
-            }
-            if (typeof res === 'object' && res !== null) {
-                await usersCollection.updateOne({ id: userId }, { $inc: { bigWinCount: 1 } })
-            }
+            // CHEATS
+            randomNum = await numberPlayCheat(res, randomNum, Number(dicePrediction), userId)
 
             for (const i of gifts) {
                 let split = i.split('/')
@@ -48,7 +44,9 @@ export async function dicePlay(dicePrediction: string | TypePlayRange[number], u
             if (!gift) {
                 return null
             }
+
             console.log([randomNum, dicePrediction, res])
+
             if (randomNum === Number(dicePrediction)) {
                 await redisClient.set(`${userId}-money`, Math.round(money * 4))
                 return { msg: "Вы выиграли!!", randomNum, gift }
@@ -56,6 +54,9 @@ export async function dicePlay(dicePrediction: string | TypePlayRange[number], u
                 return { msg: "Вы Проиграли!!", randomNum, gift }
             }
         } else {
+            // CHEATS
+            randomNum = await stringCheat(res, randomNum, dicePrediction, userId)
+
             for (const i of gifts) {
                 let split = i.split('/')
                 if (split[split.length - 1].includes(`${randomNum}`)) {
@@ -65,53 +66,7 @@ export async function dicePlay(dicePrediction: string | TypePlayRange[number], u
             if (!gift) {
                 return null
             }
-            if (res === true) {
-                switch (dicePrediction) {
-                    case playRange[0]:
-                        randomNum = [4, 5, 6][Math.floor(Math.random() * 4)]
-                        break
-                    case playRange[1]:
-                        randomNum = [1, 5, 6][Math.floor(Math.random() * 4)]
-                        break
-                    case playRange[2]:
-                        randomNum = [4, 5, 6][Math.floor(Math.random() * 4)]
-                        break
-                    case playRange[3]:
-                        randomNum = [1, 2, 3][Math.floor(Math.random() * 4)]
-                        break
-                    case playRange[4]:
-                        randomNum = [1, 3, 5][Math.floor(Math.random() * 4)]
-                        break
-                    case playRange[5]:
-                        randomNum = [2, 4, 6][Math.floor(Math.random() * 4)]
-                        break
-                }
-            }
-            if (res === false || typeof res === 'object' && res !== null) {
-                switch (dicePrediction) {
-                    case playRange[0]:
-                        randomNum = 2
-                        break
-                    case playRange[1]:
-                        randomNum = 4
-                        break
-                    case playRange[2]:
-                        randomNum = 3
-                        break
-                    case playRange[3]:
-                        randomNum = 6
-                        break
-                    case playRange[4]:
-                        randomNum = [2, 4, 6][Math.floor(Math.random() * 4)]
-                        break
-                    case playRange[5]:
-                        randomNum = [1, 3, 5][Math.floor(Math.random() * 4)]
-                        break
-                }
-                if (res !== false) {
-                    await usersCollection.updateOne({ id: userId }, { $inc: { bigWinCount: 1 } })
-                }
-            }
+
             console.log([randomNum, dicePrediction, res])
             switch (dicePrediction) {
                 case playRange[0]:
@@ -152,6 +107,7 @@ export async function dicePlay(dicePrediction: string | TypePlayRange[number], u
         }
 
     } catch (e) {
+        console.log(e)
         return null
     }
 }
