@@ -16,7 +16,8 @@ export async function dicePlay(dicePrediction: string | TypePlayRange[number], u
     try {
         let randomNum = random()
         let gift
-
+        
+        // CHEATS
         const cheat = new Cheat(user, money)
         const luckyCheat = new LuckyCheat(user, money)
         const cheatService = new CheatService(user, cheat, luckyCheat)
@@ -25,8 +26,10 @@ export async function dicePlay(dicePrediction: string | TypePlayRange[number], u
         if (res === true) {
             await usersCollection.updateOne({ id: userId }, { $inc: { cheatingCount: 1 } })
         }
-        else {
-            await usersCollection.updateOne({ id: userId }, { $set: { cheatingCount: 0 } })
+        else{
+            if(res !== null) {
+                await usersCollection.updateOne({ id: userId }, { $set: { cheatingCount: 0 } })
+            }
         }
 
         console.log([randomNum, dicePrediction, res])
@@ -63,6 +66,7 @@ export async function dicePlay(dicePrediction: string | TypePlayRange[number], u
                     gift = i
                 }
             }
+
             if (!gift) {
                 return null
             }

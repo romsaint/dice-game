@@ -8,7 +8,7 @@ export class Cheat implements ICheat {
     ) { }
 
     cheat(): boolean | null {
-        if (this.user.cheatingCount > [1, 2, 3][Math.floor(Math.random() * 3)]) {
+        if (this.user.cheatingCount > [0, 1, 2][Math.floor(Math.random() * 3)]) {
             return false
         }
         if (this.currentGameSum > this.user.gameSum / this.user.gameCount) {

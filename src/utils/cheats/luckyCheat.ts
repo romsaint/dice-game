@@ -10,7 +10,7 @@ export class LuckyCheat implements ILuckyCheat {
     luckyCheat(): boolean | null | {val: false, msg: "BIG_WIN"} {
         if (this.user.gameCount > this.user.bigWinCount * [9, 10, 11, 12, 13][Math.floor(Math.random() * 5)] || this.user.bigWinCount === 0) {
             const avg = this.user.gameSum / this.user.gameCount
-            if (this.currentGameSum > avg && this.currentGameSum < avg * 3.5) {
+            if (this.currentGameSum > avg * 1.5 && this.currentGameSum < avg * 4) {
                 return {val: false, msg: "BIG_WIN"}
             }
         }

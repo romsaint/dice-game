@@ -1,6 +1,6 @@
 import { usersCollection } from "../../db/mongo/mongoClient";
 
-export async function numberPlayCheat(res: boolean | {val: boolean;msg: "BIG_WIN";} | null, randomNum: number, dicePrediction: number, userId: number): Promise<number> {
+export async function numberPlayCheat(res: boolean | {val: boolean, msg: "BIG_WIN"} | null, randomNum: number, dicePrediction: number, userId: number): Promise<number> {
     if (res === true) {
         if (randomNum === dicePrediction) {
             if (randomNum > 5) {

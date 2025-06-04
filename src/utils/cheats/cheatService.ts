@@ -10,8 +10,7 @@ export class CheatService {
     ) { }
 
     cheatDistribution() {
-        console.log(this.user)
-        if (this.user.gameCount > 4) {
+        if (this.user.gameCount > 5) {
             if (this.user.winSum * 3.5 <= this.user.loseSum) {
                 return this.luckyCheat.luckyCheat()
             }
